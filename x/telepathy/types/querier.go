@@ -7,6 +7,7 @@ const QueryListThoughtByCreator = "list-thoughts"
 const QueryListComment = "list-comment"
 const QueryGetComment = "get-comment"
 const QueryListCommentForThought = "list-comments"
+const QueryListCommentForComment = "list-comment-comments"
 
 const QueryListUser = "list-user"
 const QueryGetUser = "get-user"

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"strconv"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -45,19 +46,41 @@ func (k Keeper) CreateComment(ctx sdk.Context, msg types.MsgCreateComment) (*sdk
 	// Create the comment
 	count := k.GetCommentCount(ctx)
 	var comment = types.Comment{
-		Creator:   msg.Creator,
-		ID:        strconv.FormatInt(count, 10),
-		Message:   msg.Message,
-		ThoughtId: msg.ThoughtId,
-	}
-
-	thought, err := k.GetThought(ctx, comment.ThoughtId)
-
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Can't add comment to thought.")
+		Creator:        msg.Creator,
+		ID:             strconv.FormatInt(count, 10),
+		Message:        msg.Message,
+		ThoughtId:      msg.ThoughtId,
+		OwnerCommentId: msg.OwnerCommentId,
 	}
 
 	store := ctx.KVStore(k.storeKey)
+
+	if msg.OwnerCommentId != "" {
+		ownerComment, err := k.GetComment(ctx, msg.OwnerCommentId)
+		if err != nil {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Can't add comment to comment.")
+		}
+		ownerComment.Comments = append(ownerComment.Comments, comment.ID)
+		//set owner comment in store
+		bz := k.cdc.MustMarshalBinaryLengthPrefixed(ownerComment)
+		storeKey := []byte(types.CommentPrefix + ownerComment.ID)
+		store.Set(storeKey, bz)
+
+	} else {
+		thought, err := k.GetThought(ctx, comment.ThoughtId)
+		if err != nil {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Can't add comment to thought.")
+		}
+		thought.Comments = append(thought.Comments, comment.ID)
+		//set thought in store
+		bz := k.cdc.MustMarshalBinaryLengthPrefixed(thought)
+		storeKey := []byte(types.ThoughtPrefix + thought.ID)
+		store.Set(storeKey, bz)
+	}
+
+	user, _ := k.GetUser(ctx, comment.Creator.String())
+	comment.CreatedBy = user
+	comment.CreatedAt = time.Now().String()
 
 	//set comment in store
 	key := []byte(types.CommentPrefix + comment.ID)
@@ -66,12 +89,6 @@ func (k Keeper) CreateComment(ctx sdk.Context, msg types.MsgCreateComment) (*sdk
 
 	// Update comment count
 	k.SetCommentCount(ctx, count+1)
-
-	thought.Comments = append(thought.Comments, comment.ID)
-	//set thought in store
-	bz := k.cdc.MustMarshalBinaryLengthPrefixed(thought)
-	storeKey := []byte(types.ThoughtPrefix + thought.ID)
-	store.Set(storeKey, bz)
 
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
@@ -89,13 +106,18 @@ func (k Keeper) GetComment(ctx sdk.Context, key string) (types.Comment, error) {
 }
 
 // SetComment sets a comment
-func (k Keeper) SetComment(ctx sdk.Context, comment types.Comment) {
-	commentKey := comment.ID
-	store := ctx.KVStore(k.storeKey)
+func (k Keeper) SetComment(ctx sdk.Context, id string, message string) (*sdk.Result, error) {
+	comment, err := k.GetComment(ctx, id)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Comment with id can not be found.")
+	}
+	comment.Message = message
 
+	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(comment)
-	key := []byte(types.CommentPrefix + commentKey)
+	key := []byte(types.CommentPrefix + id)
 	store.Set(key, bz)
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 // DeleteComment deletes a comment
@@ -155,19 +177,64 @@ func getComment(ctx sdk.Context, path []string, k Keeper) (res []byte, sdkError 
 //List comment for thought id
 func listCommentForThought(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
 	key := path[0]
+	thought, err := k.GetThought(ctx, key)
+	if err != nil {
+		return nil, err
+	}
 
 	var commentList []types.Comment
-	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, []byte(types.CommentPrefix))
-	for ; iterator.Valid(); iterator.Next() {
-		var comment types.Comment
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(store.Get(iterator.Key()), &comment)
-		if comment.ThoughtId == key {
-			commentList = append(commentList, comment)
-		}
+
+	for _, id := range thought.Comments {
+		comment, _ := k.GetComment(ctx, id)
+		commentList = append(commentList, comment)
 	}
+
 	res := codec.MustMarshalJSONIndent(k.cdc, commentList)
 	return res, nil
+
+	/* 	store := ctx.KVStore(k.storeKey)
+	   	iterator := sdk.KVStorePrefixIterator(store, []byte(types.CommentPrefix))
+	   	for ; iterator.Valid(); iterator.Next() {
+	   		var comment types.Comment
+	   		k.cdc.MustUnmarshalBinaryLengthPrefixed(store.Get(iterator.Key()), &comment)
+	   		if comment.ThoughtId == key {
+	   			commentList = append(commentList, comment)
+	   		}
+	   	}
+	   	res := codec.MustMarshalJSONIndent(k.cdc, commentList)
+	   	return res, nil */
+}
+
+func listCommentForComment(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
+	key := path[0]
+
+	ownerComment, err := k.GetComment(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+
+	var commentList []types.Comment
+
+	for _, id := range ownerComment.Comments {
+		comment, _ := k.GetComment(ctx, id)
+		commentList = append(commentList, comment)
+	}
+
+	res := codec.MustMarshalJSONIndent(k.cdc, commentList)
+	return res, nil
+
+	/* 	var commentList []types.Comment
+	   	store := ctx.KVStore(k.storeKey)
+	   	iterator := sdk.KVStorePrefixIterator(store, []byte(types.CommentPrefix))
+	   	for ; iterator.Valid(); iterator.Next() {
+	   		var comment types.Comment
+	   		k.cdc.MustUnmarshalBinaryLengthPrefixed(store.Get(iterator.Key()), &comment)
+	   		if comment.OwnerCommentId == key {
+	   			commentList = append(commentList, comment)
+	   		}
+	   	}
+	   	res := codec.MustMarshalJSONIndent(k.cdc, commentList)
+	   	return res, nil */
 }
 
 // Get creator of the item

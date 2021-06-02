@@ -15,13 +15,14 @@ import (
 var _ = strconv.Itoa(42)
 
 type createCommentRequest struct {
-	BaseReq   rest.BaseReq `json:"base_req"`
-	Creator   string       `json:"creator"`
-	Message   string       `json:"message"`
-	ThoughtId string       `json:"thoughtId"`
-	Comments  string       `json:"comments"`
-	Likes     string       `json:"likes"`
-	Shares    string       `json:"shares"`
+	BaseReq        rest.BaseReq `json:"base_req"`
+	Creator        string       `json:"creator"`
+	Message        string       `json:"message"`
+	ThoughtId      string       `json:"thoughtId"`
+	OwnerCommentId string       `json:"ownerCommentId"`
+	Comments       string       `json:"comments"`
+	Likes          string       `json:"likes"`
+	Shares         string       `json:"shares"`
 }
 
 func createCommentHandler(cliCtx context.CLIContext) http.HandlerFunc {
@@ -45,10 +46,13 @@ func createCommentHandler(cliCtx context.CLIContext) http.HandlerFunc {
 
 		parsedThoughtId := req.ThoughtId
 
+		parsedCommentId := req.OwnerCommentId
+
 		msg := types.NewMsgCreateComment(
 			creator,
 			parsedMessage,
 			parsedThoughtId,
+			parsedCommentId,
 		)
 
 		err = msg.ValidateBasic()
@@ -62,11 +66,12 @@ func createCommentHandler(cliCtx context.CLIContext) http.HandlerFunc {
 }
 
 type setCommentRequest struct {
-	BaseReq   rest.BaseReq `json:"base_req"`
-	ID        string       `json:"id"`
-	Creator   string       `json:"creator"`
-	Message   string       `json:"message"`
-	ThoughtId string       `json:"thoughtId"`
+	BaseReq        rest.BaseReq `json:"base_req"`
+	ID             string       `json:"id"`
+	Creator        string       `json:"creator"`
+	Message        string       `json:"message"`
+	ThoughtId      string       `json:"thoughtId"`
+	OwnerCommentId string       `json:"ownerCommentId"`
 }
 
 func setCommentHandler(cliCtx context.CLIContext) http.HandlerFunc {
@@ -90,11 +95,14 @@ func setCommentHandler(cliCtx context.CLIContext) http.HandlerFunc {
 
 		parsedThoughtId := req.ThoughtId
 
+		parsedOwnerCommentId := req.OwnerCommentId
+
 		msg := types.NewMsgSetComment(
 			creator,
 			req.ID,
 			parsedMessage,
 			parsedThoughtId,
+			parsedOwnerCommentId,
 		)
 
 		err = msg.ValidateBasic()

@@ -15,17 +15,19 @@ import (
 
 func GetCmdCreateComment(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "create-comment [message] [thoughtId]",
+		Use:   "create-comment [message] [thoughtId] [commentId]",
 		Short: "Creates a new comment",
-		Args:  cobra.ExactArgs(2),
+		Long:  "Can add a comment either to a thought or another comment. Pass an empty string for 'commentId' if adding to a thought and vice versa.",
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			argsMessage := string(args[0])
 			argsThoughtId := string(args[1])
+			argsCommentId := string(args[2])
 
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
-			msg := types.NewMsgCreateComment(cliCtx.GetFromAddress(), string(argsMessage), string(argsThoughtId))
+			msg := types.NewMsgCreateComment(cliCtx.GetFromAddress(), string(argsMessage), string(argsThoughtId), argsCommentId)
 			err := msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -37,18 +39,20 @@ func GetCmdCreateComment(cdc *codec.Codec) *cobra.Command {
 
 func GetCmdSetComment(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "set-comment [id]  [message] [thoughtId]",
+		Use:   "set-comment [id]  [message] [thoughtId] [commentId]",
 		Short: "Set a new comment",
-		Args:  cobra.ExactArgs(3),
+		Long:  "Can edit a comment either to a thought or another comment. Pass an empty string for 'commentId' if adding to a thought and vice versa.",
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			id := args[0]
 			argsMessage := string(args[1])
 			argsThoughtId := string(args[2])
+			argsCommentId := string(args[3])
 
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
-			msg := types.NewMsgSetComment(cliCtx.GetFromAddress(), id, string(argsMessage), string(argsThoughtId))
+			msg := types.NewMsgSetComment(cliCtx.GetFromAddress(), id, string(argsMessage), string(argsThoughtId), argsCommentId)
 			err := msg.ValidateBasic()
 			if err != nil {
 				return err

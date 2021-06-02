@@ -25,6 +25,8 @@ func NewQuerier(k Keeper) sdk.Querier {
 			return getComment(ctx, path[1:], k)
 		case types.QueryListCommentForThought:
 			return listCommentForThought(ctx, path[1:], k)
+		case types.QueryListCommentForComment:
+			return listCommentForComment(ctx, path[1:], k)
 		case types.QueryListThought:
 			return listThought(ctx, k)
 		case types.QueryGetThought:

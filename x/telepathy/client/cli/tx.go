@@ -38,6 +38,7 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		GetCmdDislikeComment(cdc),
 		GetCmdFollowUser(cdc),
 		GetCmdUnfollowUser(cdc),
+		GetCmdSetAvatar(cdc),
 	)...)
 
 	return telepathyTxCmd

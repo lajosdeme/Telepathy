@@ -171,6 +171,21 @@ func (k Keeper) UnfollowUser(ctx sdk.Context, userId string, creator sdk.AccAddr
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
+func (k Keeper) SetAvatar(ctx sdk.Context, id string, avatar string) (*sdk.Result, error) {
+	user, err := k.GetUser(ctx, id)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "User with address can not be found.")
+	}
+
+	user.Avatar = avatar
+
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshalBinaryLengthPrefixed(user)
+	key := []byte(types.UserPrefix + id)
+	store.Set(key, bz)
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+}
+
 //
 // Functions used by querier
 //

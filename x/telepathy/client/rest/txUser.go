@@ -197,3 +197,38 @@ func unfollowUserHandler(cliCtx context.CLIContext) http.HandlerFunc {
 		utils.WriteGenerateStdTxResponse(w, cliCtx, baseReq, []sdk.Msg{msg})
 	}
 }
+
+type setAvatarRequest struct {
+	BaseReq rest.BaseReq `json:"base_req"`
+	Creator string       `json:"creator"`
+	ID      string       `json:"id"`
+	Avatar  string       `json:"avatar"`
+}
+
+func setAvatarHandler(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req setAvatarRequest
+		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+		baseReq := req.BaseReq.Sanitize()
+		if !baseReq.ValidateBasic(w) {
+			return
+		}
+		creator, err := sdk.AccAddressFromBech32(req.Creator)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		msg := types.NewMsgSetAvatar(creator, req.ID, req.Avatar)
+
+		err = msg.ValidateBasic()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		utils.WriteGenerateStdTxResponse(w, cliCtx, baseReq, []sdk.Msg{msg})
+	}
+}

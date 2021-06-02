@@ -117,3 +117,27 @@ func GetCmdUnfollowUser(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
+
+func GetCmdSetAvatar(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "set-avatar [id] [avatar]",
+		Short: "Sets the user avatar hash.",
+		Long:  "Sets the IPFS has of the avatar the user uploaded",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			id := args[0]
+			avatar := args[1]
+
+			msg := types.NewMsgSetAvatar(cliCtx.GetFromAddress(), id, avatar)
+			err := msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+}

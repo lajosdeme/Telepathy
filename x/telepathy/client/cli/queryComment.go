@@ -78,3 +78,31 @@ func GetCmdListCommentsForThought(queryRoute string, cdc *codec.Codec) *cobra.Co
 		},
 	}
 }
+
+func GetCmdListCommentsForComment(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "list-comment-comments [id]",
+		Short: "list comments for a comment",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			commentId := args[0]
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/"+types.QueryListComment, queryRoute), nil)
+			if err != nil {
+				fmt.Printf("could not list Comment\n%s\n", err.Error())
+				return nil
+			}
+			var comments []types.Comment
+			cdc.MustUnmarshalJSON(res, &comments)
+
+			var out []types.Comment
+			for _, c := range comments {
+				if c.OwnerCommentId == commentId {
+					out = append(out, c)
+				}
+			}
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}

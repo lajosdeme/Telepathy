@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"strconv"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -50,6 +51,10 @@ func (k Keeper) CreateThought(ctx sdk.Context, msg types.MsgCreateThought) {
 		Message: msg.Message,
 	}
 
+	user, _ := k.GetUser(ctx, thought.Creator.String())
+	thought.CreatedBy = user
+	thought.CreatedAt = time.Now().String()
+
 	store := ctx.KVStore(k.storeKey)
 	key := []byte(types.ThoughtPrefix + thought.ID)
 
@@ -73,12 +78,18 @@ func (k Keeper) GetThought(ctx sdk.Context, key string) (types.Thought, error) {
 }
 
 // SetThought sets a thought
-func (k Keeper) SetThought(ctx sdk.Context, thought types.Thought) {
-	thoughtKey := thought.ID
+func (k Keeper) SetThought(ctx sdk.Context, id string, message string) (*sdk.Result, error) {
+	thought, err := k.GetThought(ctx, id)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Thought with id can not be found.")
+	}
+	thought.Message = message
+
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(thought)
-	key := []byte(types.ThoughtPrefix + thoughtKey)
+	key := []byte(types.ThoughtPrefix + id)
 	store.Set(key, bz)
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 // DeleteThought deletes a thought
