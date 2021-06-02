@@ -72,3 +72,25 @@ func GetCmdGetCompleteProfile(queryRoute string, cdc *codec.Codec) *cobra.Comman
 		},
 	}
 }
+
+func GetCmdGetAvatar(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "get-avatar [id]",
+		Short: "Query avatar hash for user with id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			id := args[0]
+
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", queryRoute, types.QueryGetAvatar, id), nil)
+			if err != nil {
+				fmt.Printf("could not resolve avatar %s \n%s\n", id, err.Error())
+
+				return nil
+			}
+			var out string
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}

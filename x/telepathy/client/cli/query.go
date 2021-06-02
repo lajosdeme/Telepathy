@@ -40,6 +40,7 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			GetCmdListCommentsForComment(queryRoute, cdc),
 			GetCmdListThoughtByCreator(queryRoute, cdc),
 			GetCmdGetCompleteProfile(queryRoute, cdc),
+			GetCmdGetAvatar(queryRoute, cdc),
 		)...,
 	)
 

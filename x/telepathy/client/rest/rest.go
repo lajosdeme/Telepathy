@@ -18,6 +18,7 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc("/telepathy/user/unfollow", unfollowUserHandler(cliCtx)).Methods("POST")
 	r.HandleFunc("/telepathy/user/{key}/thoughts", listThoughtsByCreatorHandler(cliCtx, "telepathy")).Methods("GET")
 	r.HandleFunc("/telepathy/profile/{key}", getProfileHandler(cliCtx, "telepathy")).Methods(("GET"))
+	r.HandleFunc("/telepathy/user/avatar/{key}", getAvatarHandler(cliCtx, "telepathy")).Methods("GET")
 	r.HandleFunc("/telepathy/user/avatar", setAvatarHandler(cliCtx)).Methods("POST")
 
 	r.HandleFunc("/telepathy/comment", createCommentHandler(cliCtx)).Methods("POST")

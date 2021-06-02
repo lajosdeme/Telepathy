@@ -45,6 +45,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleMsgFollowUser(ctx, k, msg)
 		case types.MsgUnfollowUser:
 			return handleMsgUnfollowUser(ctx, k, msg)
+		case types.MsgSetAvatar:
+			return handleMsgSetAvatar(ctx, k, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)

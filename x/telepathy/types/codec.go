@@ -22,6 +22,7 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgDislikeComment{}, "telepathy/DislikeComment", nil)
 	cdc.RegisterConcrete(MsgFollowUser{}, "telepathy/FollowUser", nil)
 	cdc.RegisterConcrete(MsgUnfollowUser{}, "telepathy/UnfollowUser", nil)
+	cdc.RegisterConcrete(MsgSetAvatar{}, "telepathy/SetAvatar", nil)
 }
 
 // ModuleCdc defines the module codec

@@ -35,6 +35,8 @@ func NewQuerier(k Keeper) sdk.Querier {
 			return listThoughtByCreator(ctx, path[1:], k)
 		case types.QueryGetCompleteProfile:
 			return getCompleteProfile(ctx, path[1:], k)
+		case types.QueryGetAvatar:
+			return getAvatar(ctx, path[1:], k)
 		default:
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "unknown telepathy query endpoint")
 		}

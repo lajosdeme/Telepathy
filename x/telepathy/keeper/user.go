@@ -186,6 +186,14 @@ func (k Keeper) SetAvatar(ctx sdk.Context, id string, avatar string) (*sdk.Resul
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
+func (k Keeper) GetAvatar(ctx sdk.Context, id string) (string, error) {
+	user, err := k.GetUser(ctx, id)
+	if err != nil {
+		return "", sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "User with address can not be found.")
+	}
+	return user.Avatar, nil
+}
+
 //
 // Functions used by querier
 //
@@ -251,12 +259,28 @@ func getCompleteProfile(ctx sdk.Context, path []string, k Keeper) (res []byte, s
 		ID:        user.ID,
 		Username:  user.Username,
 		Bio:       user.Bio,
+		Avatar:    user.Avatar,
 		Following: followings,
 		Followers: followers,
 		Thoughts:  thoughts,
 	}
 
 	res, err = codec.MarshalJSONIndent(k.cdc, completeProfile)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return res, nil
+}
+
+func getAvatar(ctx sdk.Context, path []string, k Keeper) (res []byte, sdkError error) {
+	id := path[0]
+	avatar, err := k.GetAvatar(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err = codec.MarshalJSONIndent(k.cdc, avatar)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

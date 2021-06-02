@@ -47,3 +47,17 @@ func getProfileHandler(cliCtx context.CLIContext, storeName string) http.Handler
 		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
+
+func getAvatarHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		key := vars["key"]
+
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/get-avatar/%s", storeName, key), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			return
+		}
+		rest.PostProcessResponse(w, cliCtx, res)
+	}
+}

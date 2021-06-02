@@ -45,3 +45,7 @@ func handleMsgFollowUser(ctx sdk.Context, k keeper.Keeper, msg types.MsgFollowUs
 func handleMsgUnfollowUser(ctx sdk.Context, k keeper.Keeper, msg types.MsgUnfollowUser) (*sdk.Result, error) {
 	return k.UnfollowUser(ctx, msg.UserId, msg.Creator)
 }
+
+func handleMsgSetAvatar(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetAvatar) (*sdk.Result, error) {
+	return k.SetAvatar(ctx, msg.ID, msg.Avatar)
+}
