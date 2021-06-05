@@ -109,11 +109,11 @@ You can now go to ```localhost:3000``` and use the app.
 #### Detecting offensive behaviour
  * The current version contains no moderation mechanism for weeding out hate speech, racism, violence and other problematic user behaviour. On Twitter this is addressed by a centralized force deciding what is allowed and what is not. There are various options for solving this in a decentralized context. I propose one such solution here, but there might be other way better options to work this out.
  * We could have an open-source algorithm that analyses thoughts and determines whether they are offensive or not. This algorithm would be available to inspect and propose modifications to by everyone. Each such modification should be voted and and approved/rejected by the Telepathy community.
- * When a user wants to share a thought (that is, make a transaction) the system can use an oracle (like that provided by [Chainlink](https://chain.link/)) that using the above mentioned algorithm can securely verify whether the thought is offensive or not. 
+ * When a user wants to share a thought (that is, make a transaction) the system can use an [Chainlink](https://chain.link/) oracle that using the above mentioned algorithm can securely verify whether the thought is offensive or not. 
  * If it is offensive, the transaction is rejected and the user incurs a penalty, thereby discouraging this type of behaviour.
 
 #### Importing tweets
-* We all already use Twitter, and it would be very hard to leave that platform behind and migrate to a web 3.0 solution like Telepathy. One roadblock is that people wouldn't want to leave the tweets they have crafted over the years behind. This can be solved by using an oracle (again, possibly from [Chainlink](https://chain.link/)) to query the Twitter API and import all your tweets as thoughts into Telepathy.
+* We all already use Twitter, and it would be very hard to leave that platform behind and migrate to a web 3.0 solution like Telepathy. One roadblock is that people wouldn't want to leave the tweets they have crafted over the years behind. This can be solved by using a [Chainlink](https://chain.link/) oracle to query the Twitter API and import all your tweets as thoughts into Telepathy.
 * This would also make sure that the wisdom and humour that we humans have generated on Twitter over the years is taken from that walled garden and preserved on the blockchain as our collective heritage.
 ##### Other
 - [ ] Resharing thoughts posted by other users
