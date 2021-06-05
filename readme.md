@@ -1,6 +1,27 @@
-# telepathy
+# Telepathy
+![telepathy_logo](https://user-images.githubusercontent.com/44027725/120887037-0fee5580-c5f1-11eb-803e-ec29fa00997c.png)
 
-**telepathy** is a blockchain application built using Cosmos SDK and Tendermint and generated with [Starport](https://github.com/tendermint/starport).
+
+**Telepathy** is a blockchain built with the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk). It aims to be a decentralized microblogging platform free from censorship, ads and middlemen.
+
+While the Telepathy blockchain is functional and can be used, tested, tweaked and experimented with, it is still in development mode and has a long way to go before being used in production. (Though I hope that one day it will be.)
+
+## Motivation
+[Twitter](https://twitter.com) is an amazing platform for people all around the world to share their thoughts and ideas with everyone else, however it is rooted in the web 2.0/society 4.0 system of the world, and thus it has some serious handicaps, which can be remedied with the use of blockchain technology. These handicaps are mainly cemented in the centralized authority that Twitter is, mediating the thoughts of more than 300 million people and at the end of the day deciding who gets to say what. Twitter was an incredible invention for the web 2.0 era, however, as we move more and more to web 3.0 we need a thought sharing platform that is in sync with the spirit of the times. 
+
+<b>tele·pathy</b> /tɪˈlɛpəθi/
+<i>[noun]</i>
+Communication of thoughts or ideas from one mind to another without the normal use of the senses. <br> <i>(Source: Oxford Advanced Learner's Dictionary)</i>
+
+In the case of telepathy, you convey a thought without using speech or writing, while with Telepathy, you do it without using any third party.
+
+## Architecture
+![architecture2](https://user-images.githubusercontent.com/44027725/120889990-57c8a900-c600-11eb-8392-3a964c791920.jpg)
+ 
+ * A bare bones frontend for Telepathy built with React and Next JS is available [here](https://github.com/lajosdeme/telepathy-frontend). (This has to be run locally for now, but can easily be deployed to IPFS later.)
+ * When an action is executed on the front-end the request is made through an Nginx reverse proxy because CORS policies are disabled by default for Cosmos chains because of security. More info on this can be found [here](https://docs.cosmos.network/v0.39/interfaces/rest.html).
+ * Thoughts, comments etc. are all recorded as transactions on the Telepathy blockchain.
+ * When a user sets an avatar or uploads a picture, we upload it to IPFS, and once we receive the CID, we pass that CID with a transaction to our blockchain. When the image has to be retreived we request it from IPFS with the CID stored on chain.
 
 ## Get started
 
