@@ -24,7 +24,12 @@ In the case of telepathy, you convey a thought without using speech or writing, 
  * When a user sets an avatar or uploads a picture, we upload it to IPFS, and once we receive the CID, we pass that CID with a transaction to our blockchain. When the image has to be retreived we request it from IPFS with the CID stored on chain.
 
 ## Get started
-Before running Telepathy you have to take a few preliminary steps:
+Before running Telepathy you have to take a few preliminary steps:  
+0. Clone the repo:
+```
+git clone github.com/lajosdeme/Telepathy.git
+```
+
 1. Make sure **Go 1.16+** is installed on your workstation
 2. Install [starport](https://docs.starport.network/intro/install.html) (Optional)
 3. Install the [IPFS](https://docs.ipfs.io/install/command-line/) CLI
@@ -32,10 +37,7 @@ Before running Telepathy you have to take a few preliminary steps:
 5. Edit your ```nginx.conf``` file to include the contents of the ```/scripts/nginx/nginx.conf``` file 
 6. Run the ```scripts/ipfs-config``` script to config IPFS
 7. In your terminal run ```nginx``` and ```ipfs daemon``` to start the nginx server and a local IPFS node
-8. Clone the repo:
-```
-git clone github.com/lajosdeme/Telepathy.git
-```
+
 Now you can ```cd``` into the repo and proceed with:
 ```
 make
