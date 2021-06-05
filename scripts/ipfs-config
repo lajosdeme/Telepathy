@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#allow cross-origin requests (CORS)
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'
+ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '["GET", "POST", "PUT"]'
+
+#set gateway port to 8081, the default 8080 is used by nginx reverse proxy
+ipfs config Addresses.Gateway "/ip4/127.0.0.1/tcp/8081"
