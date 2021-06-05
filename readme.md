@@ -18,7 +18,7 @@ In the case of telepathy, you convey a thought without using speech or writing, 
 ## Architecture
 ![architecture2](https://user-images.githubusercontent.com/44027725/120889990-57c8a900-c600-11eb-8392-3a964c791920.jpg)
  
- * A bare bones frontend for Telepathy built with React and Next JS is available [here](https://github.com/lajosdeme/telepathy-frontend). (This has to be run locally for now, but can easily be deployed to IPFS later.)
+ * A bare bones frontend for Telepathy built with React and Next JS is available [here](https://github.com/lajosdeme/telepathy-frontend). (This has to be run locally for now, but can easily be [deployed to IPFS later](https://github.com/Velenir/nextjs-ipfs-example).)
  * When an action is executed on the front-end the request is made through an Nginx reverse proxy because CORS policies are disabled by default for Cosmos chains because of security. More info on this can be found [here](https://docs.cosmos.network/v0.39/interfaces/rest.html).
  * Thoughts, comments etc. are all recorded as transactions on the Telepathy blockchain.
  * When a user sets an avatar or uploads a picture, we upload it to IPFS, and once we receive the CID, we pass that CID with a transaction to our blockchain. When the image has to be retreived we request it from IPFS with the CID stored on chain.
@@ -112,6 +112,9 @@ You can now go to ```localhost:3000``` and use the app.
  * When a user wants to share a thought (that is, make a transaction) the system can use an oracle (like that provided by [Chainlink](https://chain.link/)) that using the above mentioned algorithm can securely verify whether the thought is offensive or not. 
  * If it is offensive, the transaction is rejected and the user incurs a penalty, thereby discouraging this type of behaviour.
 
+#### Importing tweets
+* We all already use Twitter, and it would be very hard to leave that platform behind and migrate to a web 3.0 solution like Telepathy. One roadblock is that people wouldn't want to leave the tweets they have crafted over the years behind. This can be solved by using an oracle (again, possibly from [Chainlink](https://chain.link/)) to query the Twitter API and import all your tweets as thoughts into Telepathy.
+* This would also make sure that the wisdom and humour that we humans have generated on Twitter over the years is taken from that walled garden and preserved on the blockchain as our collective heritage.
 ##### Other
 - [ ] Resharing thoughts posted by other users
 - [ ] Adding photos to thoughts
