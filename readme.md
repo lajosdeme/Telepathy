@@ -24,18 +24,34 @@ In the case of telepathy, you convey a thought without using speech or writing, 
  * When a user sets an avatar or uploads a picture, we upload it to IPFS, and once we receive the CID, we pass that CID with a transaction to our blockchain. When the image has to be retreived we request it from IPFS with the CID stored on chain.
 
 ## Get started
-
+Before running Telepathy you have to take a few preliminary steps:
+1. Make sure **Go 1.16+** is installed on your workstation
+2. Install [starport](https://docs.starport.network/intro/install.html) (Optional)
+3. Install the [IPFS](https://docs.ipfs.io/install/command-line/) CLI
+4. Install [Nginx](https://www.nginx.com/resources/wiki/start/topics/tutorials/install/)
+5. Edit your ```nginx.conf``` file to include the contents of the ```/scripts/nginx/nginx.conf``` file 
+6. Run the ```scripts/ipfs-config``` script to config IPFS
+7. In your terminal run ```nginx``` and ```ipfs daemon``` to start the nginx server and a local IPFS node
+8. Clone the repo:
+```
+git clone github.com/lajosdeme/Telepathy.git
+```
+Now you can ```cd``` into the repo and proceed with:
+```
+make
+```
+or
 ```
 starport serve
 ```
+(If you're not using ```starport``` you also have to run ```telepathyd init test --chain-id=telepathy```)
 
-`serve` command installs dependencies, initializes and runs the application.
+You will see that two wallets are created with their respective mnemonics. You can use these to log in to the front-end web app.
 
-## Configure
-
-Initialization parameters of your app are stored in `config.yml`.
+Run ```telepathyd help``` and ```telepathycli help``` to make sure everything is ok.
 
 ### `accounts`
+Initialization parameters are stored in `config.yml`.
 
 A list of user accounts created during genesis of your application.
 
@@ -44,21 +60,6 @@ A list of user accounts created during genesis of your application.
 | name  | Y        | String          | Local name of the key pair                        |
 | coins | Y        | List of Strings | Initial coins with denominations (e.g. "100coin") |
 
-### UI on Github Pages
-
-Click the link below, and scroll down until you see it get her pages. Then, select the branch gh-pages.
-
-[Github Pages Setings](https://github.com/(lajosdeme/telepathy/settings/)
-
-After you do that you can visit your chain's UI at:
-
-https://lajosdeme.github.io/telepathy
-
-This is especially useful when you would like to rapidly iterate on a live user interface. Remember, each community member can have their own github pages instance, allowing your community to mix-and-match front ends.
-
-### CI
-
-By default, this chain includes a github action that builds for amd64 and arm64 on Windows, Mac, and Linux.
 
 ### Docker Images And Pi Images
 
@@ -71,9 +72,48 @@ DOCKERHUB_TOKEN
 
 You can get the token [here](https://hub.docker.com/settings/security)
 
-## Learn more
+## Try Telepathy with the CLI
 
-- [Starport](https://github.com/tendermint/starport)
-- [Cosmos SDK documentation](https://docs.cosmos.network)
-- [Cosmos Tutorials](https://tutorials.cosmos.network)
-- [Channel on Discord](https://discord.gg/W8trcGV)
+Run ```telepathyd start``` to spin up a local node.
+
+### Creating a user
+The best place to start is to create a user for one of your addresses. Each address can have one user, with an avatar, username and bio.
+```
+telepathycli tx telepathy create-user "alice" "This is a short bio for alice" --from alice
+```
+
+### Creating a thought
+Thought are just like tweets and you can create one like this:
+```
+telepathycli tx telepathy create-thought "Posting my first thought on Telepathy" --from alice
+```
+
+## Try Telepathy as a web app
+
+Telepathy has a bare bones (yet) front-end which makes it easy to interact with the underlying blockchain.
+
+Get it with:
+```
+git clone github.com/lajosdeme/telepathy-frontend.git
+```
+
+Then ```cd``` into the folder and start the rest server:
+```
+telepathycli rest-server --chain-id telepathy --trust-node --unsafe-cors
+```
+You can now go to ```localhost:3000``` and use the app.
+
+
+## Roadmap
+#### Detecting offensive behaviour
+ * The current version contains no moderation mechanism for weeding out hate speech, racism, violence and other problematic user behaviour. On Twitter this is addressed by a centralized force deciding what is allowed and what is not. There are various options for solving this in a decentralized context. I propose one such solution here, but there might be other way better options to work this out.
+ * We could have an open-source algorithm that analyses thoughts and determines whether they are offensive or not. This algorithm would be available to inspect and propose modifications to by everyone. Each such modification should be voted and and approved/rejected by the Telepathy community.
+ * When a user wants to share a thought (that is, make a transaction) the system can use an oracle (like that provided by [Chainlink](https://chain.link/)) that using the above mentioned algorithm can securely verify whether the thought is offensive or not. 
+ * If it is offensive, the transaction is rejected and the user incurs a penalty, thereby discouraging this type of behaviour.
+
+##### Other
+- [ ] Resharing thoughts posted by other users
+- [ ] Adding photos to thoughts
+- [ ] Redesigning the frontend to look cooler
+ 
+ 
