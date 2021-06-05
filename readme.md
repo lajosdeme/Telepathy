@@ -101,6 +101,7 @@ Then ```cd``` into the folder and start the rest server:
 ```
 telepathycli rest-server --chain-id telepathy --trust-node --unsafe-cors
 ```
+Run one of the start scripts like ```npm run dev```.
 You can now go to ```localhost:3000``` and use the app.
 
 
